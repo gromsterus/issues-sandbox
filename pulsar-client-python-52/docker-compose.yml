@@ -1,0 +1,29 @@
+version: '3.9'
+
+x-app: &app
+  build:
+    context: .
+  ports:
+    - "8000:8000"
+  volumes:
+    - .:/app
+
+services:
+  case:
+    << : *app
+    command: gunicorn case:app --workers=2 --preload --bind 0.0.0.0:8000
+
+  fix:
+    <<: *app
+    command: gunicorn case_fixed:app 
+      --config gunicorn_conf.py 
+      --workers=2 
+      --preload 
+      --bind 0.0.0.0:8000
+
+  pulsar:
+    image: apachepulsar/pulsar:2.10.2
+    ports:
+      - 6650:6650
+      - 8080:8080
+    command: bin/pulsar standalone -nss
