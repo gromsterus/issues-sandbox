@@ -1,0 +1,26 @@
+x-app: &app
+  image: pulsar-client-python-150:local
+  build:
+    context: .
+  platform: linux/amd64  # pulsar-client==2.10.2 is only available for linux/amd64
+  ports:
+    - "8000:8000"
+  volumes:
+    - .:/app
+
+services:
+  case:
+    <<: *app
+    command: celery -A case:celery_app worker -c 3 -l info
+
+  task:
+    <<: *app
+    command: ./task.py
+
+  pulsar:
+    image: apachepulsar/pulsar:2.10.2
+    platform: linux/amd64
+    ports:
+      - 6650:6650
+      - 8080:8080
+    command: bin/pulsar standalone -nss
