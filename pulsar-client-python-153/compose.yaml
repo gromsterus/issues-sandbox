@@ -1,0 +1,27 @@
+x-app: &app
+  build:
+    context: .
+  ports:
+    - "8000:8000"
+  volumes:
+    - .:/app
+
+services:
+  case:
+    << : *app
+    command: uwsgi -w case:app uwsgi.ini
+
+  fix:
+    <<: *app
+    command: uwsgi -w case_fixed_ext:app uwsgi.ini
+
+  gunicorn:
+    << : *app
+    command: gunicorn -c gunicorn_conf.py case_gunicorn:app
+
+  pulsar:
+    image: apachepulsar/pulsar:3.1.0
+    ports:
+      - 6650:6650
+      - 8080:8080
+    command: bin/pulsar standalone -nss

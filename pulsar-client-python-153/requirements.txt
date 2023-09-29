@@ -1,0 +1,4 @@
+flask==2.3.3
+gunicorn==21.2.0
+pulsar-client==3.3.0
+uwsgi==2.0.22
